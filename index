@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 30px 0;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .logo p {
+            margin-top: 10px;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .category-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-hash {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-weed {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .products-grid {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .product-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 15px;
+        }
+
+        .product-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-prices {
+            background: #ffd700;
+            color: #333;
+        }
+
+        .btn-order {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: white;
+        }
+
+        .price-list {
+            margin: 20px 0;
+        }
+
+        .price-item {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        .weight-buttons {
+            display: grid;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn-weight {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-weight:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.9);
+            font-size: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: #4CAF50;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>🛒 DREAM SHOP</h1>
+            <p>BOT POUR COMMANDER HASH-WEED-CALI<br>SUPPORT: @DREAMSHOP390</p>
+        </div>
+
+        <!-- Admin Panel -->
+        <div class="admin-panel" id="adminPanel">
+            <button class="btn admin-btn" onclick="showAddStock()">➕ Recharger le stock</button>
+        </div>
+
+        <!-- Category Selection -->
+        <div id="categoryView">
+            <div class="category-buttons">
+                <button class="btn btn-hash" onclick="showProducts('hash')">HASH 🍫</button>
+                <button class="btn btn-weed" onclick="showProducts('weed')">WEED 🌱</button>
+            </div>
+        </div>
+
+        <!-- Products View -->
+        <div id="productsView" style="display: none;">
+            <button class="back-btn" onclick="showHome()">← Retour</button>
+            <h2 id="categoryTitle" style="margin-bottom: 20px;"></h2>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+
+        <!-- Price Modal -->
+        <div id="priceModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('priceModal')">&times;</span>
+                <h2 id="priceModalTitle"></h2>
+                <div class="price-list" id="priceList"></div>
+                <button class="btn-submit" onclick="showOrderFromPrice()">🛒 Commander</button>
+            </div>
+        </div>
+
+        <!-- Order Modal -->
+        <div id="orderModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('orderModal')">&times;</span>
+                <h2 id="orderModalTitle"></h2>
+                <div class="weight-buttons" id="weightButtons"></div>
+            </div>
+        </div>
+
+        <!-- Address Modal -->
+        <div id="addressModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addressModal')">&times;</span>
+                <h2>📍 Informations de livraison</h2>
+                <textarea id="addressInput" placeholder="🏠 Adresse complète (numéro, rue, ville, code postal)" rows="3"></textarea>
+                <input type="tel" id="phoneInput" placeholder="📞 Numéro de téléphone">
+                <button class="btn-submit" onclick="submitOrder()">✅ Confirmer la commande</button>
+            </div>
+        </div>
+
+        <!-- Add Stock Modal -->
+        <div id="addStockModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('addStockModal')">&times;</span>
+                <h2>➕ Ajouter un produit</h2>
+                <select id="stockCategory" style="padding: 15px; margin: 10px 0; width: 100%; border-radius: 10px;">
+                    <option value="hash">HASH 🍫</option>
+                    <option value="weed">WEED 🌱</option>
+                </select>
+                <input type="text" id="productName" placeholder="📝 Nom du produit">
+                <input type="text" id="productImage" placeholder="🖼️ URL de l'image">
+                <input type="text" id="productPrices" placeholder="💰 Prix (ex: 5,10,15,20,25)">
+                <input type="text" id="productWeights" placeholder="⚖️ Poids en g (ex: 1,2,3,4,5)">
+                <input type="number" id="productStock" placeholder="📦 Stock total en grammes">
+                <button class="btn-submit" onclick="addProduct()">✅ Ajouter au stock</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        const ADMIN_ID = 8470082934;
+        let currentUser = tg.initDataUnsafe?.user;
+        let currentProduct = null;
+        let currentCategory = null;
+        let selectedWeight = null;
+        let selectedPrice = null;
+
+        // Stock data
+        let stock = {
+            hash: [],
+            weed: []
+        };
+
+        // Load stock from storage
+        function loadStock() {
+            const saved = localStorage.getItem('dreamshop_stock');
+            if (saved) {
+                stock = JSON.parse(saved);
+            }
+        }
+
+        function saveStock() {
+            localStorage.setItem('dreamshop_stock', JSON.stringify(stock));
+        }
+
+        // Initialize
+        function init() {
+            loadStock();
+            if (currentUser && currentUser.id === ADMIN_ID) {
+                document.getElementById('adminPanel').style.display = 'block';
+            }
+            tg.ready();
+        }
+
+        function showHome() {
+            document.getElementById('productsView').style.display = 'none';
+            document.getElementById('categoryView').style.display = 'block';
+        }
+
+        function showProducts(category) {
+            currentCategory = category;
+            const products = stock[category];
+            
+            if (products.length === 0) {
+                tg.showAlert(`🕸️ Aucun produit dans la catégorie ${category.toUpperCase()} pour le moment.`);
+                return;
+            }
+
+            document.getElementById('categoryView').style.display = 'none';
+            document.getElementById('productsView').style.display = 'block';
+            document.getElementById('categoryTitle').textContent = category.toUpperCase() + (category === 'hash' ? ' 🍫' : ' 🌱');
+
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '';
+
+            products.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250?text=Produit'">
+                    <div class="product-name">📦 ${product.name}</div>
+                    <div class="product-actions">
+                        <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
+                        <button class="btn-action btn-order" onclick="showOrder('${category}', ${index})">🛒 Commander</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showPrices(category, index) {
+            const product = stock[category][index];
+            currentProduct = { category, index, product };
+
+            document.getElementById('priceModalTitle').textContent = `💨 ${product.name}`;
+            
+            const list = document.getElementById('priceList');
+            list.innerHTML = '';
+            
+            product.weights.forEach((weight, i) => {
+                const price = product.prices[i];
+                const item = document.createElement('div');
+                item.className = 'price-item';
+                item.textContent = `⚖️ ${weight}g → ${price}€`;
+                list.appendChild(item);
+            });
+
+            document.getElementById('priceModal').style.display = 'block';
+        }
+
+        function showOrderFromPrice() {
+            closeModal('priceModal');
+            showOrder(currentProduct.category, currentProduct.index);
+        }
+
+        function showOrder(category, index) {
+            const product = stock[category][index];
+            currentProduct = { category, index, product };
+
+            document.getElementById('orderModalTitle').textContent = `⚖️ Choisis ton poids pour ${product.name}`;
+            
+            const buttons = document.getElementById('weightButtons');
+            buttons.innerHTML = '';
+            
+            product.weights.forEach((weight, i) => {
+                const price = product.prices[i];
+                const btn = document.createElement('button');
+                btn.className = 'btn-weight';
+                btn.textContent = `${weight}g - ${price}€`;
+                btn.onclick = () => selectWeight(weight, price);
+                buttons.appendChild(btn);
+            });
+
+            document.getElementById('orderModal').style.display = 'block';
+        }
+
+        function selectWeight(weight, price) {
+            selectedWeight = weight;
+            selectedPrice = price;
+            closeModal('orderModal');
+            document.getElementById('addressModal').style.display = 'block';
+        }
+
+        function submitOrder() {
+            const address = document.getElementById('addressInput').value.trim();
+            const phone = document.getElementById('phoneInput').value.trim();
+
+            if (!address || !phone) {
+                tg.showAlert('⚠️ Remplis tous les champs');
+                return;
+            }
+
+            const orderData = {
+                product: currentProduct.product.name,
+                weight: selectedWeight,
+                price: selectedPrice,
+                address: address,
+                phone: phone,
+                user: currentUser
+            };
+
+            // Send to bot via Telegram
+            tg.sendData(JSON.stringify(orderData));
+
+            closeModal('addressModal');
+            tg.showAlert(`✅ Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin pour validation.`);
+            
+            // Clear form
+            document.getElementById('addressInput').value = '';
+            document.getElementById('phoneInput').value = '';
+            
+            showHome();
+        }
+
+        function showAddStock() {
+            document.getElementById('addStockModal').style.display = 'block';
+        }
+
+        function addProduct() {
+            const category = document.getElementById('stockCategory').value;
+            const name = document.getElementById('productName').value.trim();
+            const image = document.getElementById('productImage').value.trim();
+            const pricesStr = document.getElementById('productPrices').value.trim();
+            const weightsStr = document.getElementById('productWeights').value.trim();
+            const stockTotal = parseFloat(document.getElementById('productStock').value);
+
+            if (!name || !image || !pricesStr || !weightsStr || !stockTotal) {
+                tg.showAlert('⚠️ Remplis tous les champs');
+                return;
+            }
+
+            try {
+                const prices = pricesStr.split(',').map(p => parseFloat(p.trim()));
+                const weights = weightsStr.split(',').map(w => parseFloat(w.trim()));
+
+                if (prices.length !== 5 || weights.length !== 5) {
+                    tg.showAlert('⚠️ Il faut exactement 5 prix et 5 poids');
+                    return;
+                }
+
+                stock[category].push({
+                    name,
+                    image,
+                    prices,
+                    weights,
+                    stock_total: stockTotal
+                });
+
+                saveStock();
+                closeModal('addStockModal');
+                tg.showAlert(`✅ Stock ${category.toUpperCase()} mis à jour avec succès !`);
+
+                // Clear form
+                document.getElementById('productName').value = '';
+                document.getElementById('productImage').value = '';
+                document.getElementById('productPrices').value = '';
+                document.getElementById('productWeights').value = '';
+                document.getElementById('productStock').value = '';
+            } catch (e) {
+                tg.showAlert('⚠️ Format invalide');
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
