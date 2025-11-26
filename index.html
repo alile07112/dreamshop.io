@@ -42,6 +42,23 @@
             font-size: 14px;
         }
 
+        .api-status {
+            text-align: center;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 12px;
+            background: rgba(255,255,255,0.1);
+        }
+
+        .api-status.connected {
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        .api-status.disconnected {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
         .category-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -226,21 +243,22 @@
             margin-bottom: 20px;
         }
 
-        .admin-panel {
-            display: none;
-        }
-
-        .admin-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
         .loading {
             text-align: center;
-            padding: 20px;
+            padding: 40px 20px;
             font-size: 18px;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60% { content: '...'; }
+            80%, 100% { content: ''; }
         }
     </style>
 </head>
@@ -251,9 +269,8 @@
             <p>BOT POUR COMMANDER HASH-WEED-CALI<br>SUPPORT: @DREAMSHOP390</p>
         </div>
 
-        <!-- Admin Panel -->
-        <div class="admin-panel" id="adminPanel">
-            <button class="btn admin-btn" onclick="showAddStock()">➕ Recharger le stock</button>
+        <div id="apiStatus" class="api-status">
+            🔄 Connexion à l'API...
         </div>
 
         <!-- Category Selection -->
@@ -300,36 +317,23 @@
                 <button class="btn-submit" onclick="submitOrder()">✅ Confirmer la commande</button>
             </div>
         </div>
-
-        <!-- Add Stock Modal -->
-        <div id="addStockModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('addStockModal')">&times;</span>
-                <h2>➕ Ajouter un produit</h2>
-                <select id="stockCategory" style="padding: 15px; margin: 10px 0; width: 100%; border-radius: 10px;">
-                    <option value="hash">HASH 🍫</option>
-                    <option value="weed">WEED 🌱</option>
-                </select>
-                <input type="text" id="productName" placeholder="📝 Nom du produit">
-                <input type="text" id="productImage" placeholder="🖼️ URL de l'image">
-                <input type="text" id="productPrices" placeholder="💰 Prix (ex: 5,10,15,20,25)">
-                <input type="text" id="productWeights" placeholder="⚖️ Poids en g (ex: 1,2,3,4,5)">
-                <input type="number" id="productStock" placeholder="📦 Stock total en grammes">
-                <button class="btn-submit" onclick="addProduct()">✅ Ajouter au stock</button>
-            </div>
-        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        const ADMIN_ID = 8470082934;
+        // ⚠️ IMPORTANT : Remplace par l'IP publique de ton RDP Windows
+        // Exemple : const API_URL = 'http://45.158.77.19:5000';
+        // Ou utilise ngrok : const API_URL = 'https://abc123.ngrok-free.app';
+        const API_URL = 'http://VOTRE_IP_RDP:5000'; // ← CHANGE ICI
+
         let currentUser = tg.initDataUnsafe?.user;
         let currentProduct = null;
         let currentCategory = null;
         let selectedWeight = null;
         let selectedPrice = null;
+        let apiConnected = false;
 
         // Stock data
         let stock = {
@@ -337,40 +341,115 @@
             weed: []
         };
 
-        // Charger le stock depuis ton serveur/API
-        async function loadStock() {
-            try {
-                // ⚠️ Change cette URL par ton vrai serveur si tu en as un
-                // Pour l'instant, on utilise localStorage
-                const saved = localStorage.getItem('dreamshop_stock');
-                if (saved) {
-                    stock = JSON.parse(saved);
-                    console.log("Stock chargé depuis localStorage:", stock);
-                } else {
-                    // Données de test
-                    stock = {
-                        hash: [],
-                        weed: []
-                    };
-                }
-            } catch (e) {
-                console.error("Erreur lors du chargement du stock:", e);
-                tg.showAlert("⚠️ Erreur lors du chargement du stock");
+        // Mettre à jour le statut de l'API
+        function updateApiStatus(connected, message) {
+            const statusEl = document.getElementById('apiStatus');
+            if (connected) {
+                statusEl.className = 'api-status connected';
+                statusEl.textContent = '✅ ' + message;
+                apiConnected = true;
+            } else {
+                statusEl.className = 'api-status disconnected';
+                statusEl.textContent = '❌ ' + message;
+                apiConnected = false;
             }
         }
 
-        function saveStock() {
-            localStorage.setItem('dreamshop_stock', JSON.stringify(stock));
-            console.log("Stock sauvegardé:", stock);
+        // Vérifier la connexion à l'API
+        async function checkApiConnection() {
+            try {
+                console.log('🔍 Vérification connexion API:', API_URL);
+                const response = await fetch(`${API_URL}/api/health`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ API connectée:', data);
+                    updateApiStatus(true, 'Connecté au serveur RDP');
+                    return true;
+                } else {
+                    throw new Error('HTTP ' + response.status);
+                }
+            } catch (e) {
+                console.error('❌ Erreur connexion API:', e);
+                updateApiStatus(false, 'Serveur RDP inaccessible');
+                return false;
+            }
+        }
+
+        // Charger le stock depuis l'API RDP
+        async function loadStock() {
+            try {
+                console.log('📦 Chargement du stock depuis:', API_URL);
+                
+                const response = await fetch(`${API_URL}/api/stock`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                stock = await response.json();
+                console.log('✅ Stock chargé:', stock);
+                
+                // Sauvegarder en cache local
+                localStorage.setItem('dreamshop_stock_cache', JSON.stringify(stock));
+                localStorage.setItem('dreamshop_stock_timestamp', Date.now());
+                
+                updateApiStatus(true, `Connecté - ${stock.hash.length} hash, ${stock.weed.length} weed`);
+                
+            } catch (e) {
+                console.error('❌ Erreur chargement stock:', e);
+                updateApiStatus(false, 'Utilisation du cache local');
+                
+                // Fallback sur le cache local
+                const cached = localStorage.getItem('dreamshop_stock_cache');
+                const timestamp = localStorage.getItem('dreamshop_stock_timestamp');
+                
+                if (cached) {
+                    stock = JSON.parse(cached);
+                    const cacheAge = Math.floor((Date.now() - parseInt(timestamp)) / 60000);
+                    console.log(`📦 Stock chargé depuis le cache (${cacheAge} min)`);
+                    tg.showPopup({
+                        title: '⚠️ Mode hors ligne',
+                        message: `Données en cache (${cacheAge} min). Vérifie que l'API est démarrée sur le RDP.`,
+                        buttons: [{type: 'ok'}]
+                    });
+                } else {
+                    tg.showPopup({
+                        title: '❌ Erreur',
+                        message: 'Impossible de charger le stock. Contacte @DREAMSHOP390',
+                        buttons: [{type: 'ok'}]
+                    });
+                }
+            }
         }
 
         // Initialize
         async function init() {
+            console.log('🚀 Initialisation DreamShop Mini-App...');
+            console.log('👤 User:', currentUser);
+            
+            updateApiStatus(false, 'Connexion...');
+            
+            // Vérifier la connexion
+            await checkApiConnection();
+            
+            // Charger le stock
             await loadStock();
-            if (currentUser && currentUser.id === ADMIN_ID) {
-                document.getElementById('adminPanel').style.display = 'block';
-            }
+            
             tg.ready();
+            console.log('✅ Mini-App prête');
         }
 
         function showHome() {
@@ -378,31 +457,47 @@
             document.getElementById('categoryView').style.display = 'block';
         }
 
-        function showProducts(category) {
+        async function showProducts(category) {
             currentCategory = category;
-            const products = stock[category];
             
-            if (!products || products.length === 0) {
-                tg.showAlert(`🕸️ Aucun produit dans la catégorie ${category.toUpperCase()} pour le moment.`);
-                return;
-            }
-
+            // Afficher un loader
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = '<div class="loading">Chargement des produits</div>';
+            
             document.getElementById('categoryView').style.display = 'none';
             document.getElementById('productsView').style.display = 'block';
             document.getElementById('categoryTitle').textContent = category.toUpperCase() + (category === 'hash' ? ' 🍫' : ' 🌱');
+            
+            // Recharger le stock depuis le RDP
+            console.log(`🔄 Rechargement catégorie: ${category}`);
+            await loadStock();
+            
+            const products = stock[category];
+            
+            if (!products || products.length === 0) {
+                grid.innerHTML = `
+                    <div class="loading">
+                        🕸️ Aucun produit dans la catégorie ${category.toUpperCase()} pour le moment.
+                    </div>
+                `;
+                return;
+            }
 
-            const grid = document.getElementById('productsGrid');
             grid.innerHTML = '';
 
             products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 
-                // Utiliser file_id ou image selon ce qui est disponible
-                const imageUrl = product.image || product.file_id || 'https://via.placeholder.com/400x250?text=Produit';
+                // Gestion des images
+                let imageUrl = 'https://via.placeholder.com/400x250/667eea/ffffff?text=' + encodeURIComponent(product.name);
+                
+                if (product.image && product.image.startsWith('http')) {
+                    imageUrl = product.image;
+                }
                 
                 card.innerHTML = `
-                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250?text=Produit'">
+                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'">
                     <div class="product-name">📦 ${product.name}</div>
                     <div class="product-actions">
                         <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
@@ -477,78 +572,32 @@
 
             const orderData = {
                 product: currentProduct.product.name,
+                category: currentProduct.category,
                 weight: selectedWeight,
                 price: selectedPrice,
                 address: address,
                 phone: phone,
-                user: currentUser
+                user: currentUser || {id: 0, username: 'unknown'}
             };
+
+            console.log('📦 Envoi commande:', orderData);
 
             // Envoyer les données au bot Telegram
             tg.sendData(JSON.stringify(orderData));
 
             closeModal('addressModal');
-            tg.showAlert(`✅ Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin pour validation.`);
+            
+            tg.showPopup({
+                title: '✅ Commande envoyée',
+                message: `Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin pour validation.`,
+                buttons: [{type: 'ok'}]
+            });
             
             // Réinitialiser le formulaire
             document.getElementById('addressInput').value = '';
             document.getElementById('phoneInput').value = '';
             
             showHome();
-        }
-
-        function showAddStock() {
-            if (!currentUser || currentUser.id !== ADMIN_ID) {
-                tg.showAlert('❌ Seul l\'admin peut faire cela.');
-                return;
-            }
-            document.getElementById('addStockModal').style.display = 'block';
-        }
-
-        function addProduct() {
-            const category = document.getElementById('stockCategory').value;
-            const name = document.getElementById('productName').value.trim();
-            const image = document.getElementById('productImage').value.trim();
-            const pricesStr = document.getElementById('productPrices').value.trim();
-            const weightsStr = document.getElementById('productWeights').value.trim();
-            const stockTotal = parseFloat(document.getElementById('productStock').value);
-
-            if (!name || !image || !pricesStr || !weightsStr || !stockTotal) {
-                tg.showAlert('⚠️ Remplis tous les champs');
-                return;
-            }
-
-            try {
-                const prices = pricesStr.split(',').map(p => parseFloat(p.trim()));
-                const weights = weightsStr.split(',').map(w => parseFloat(w.trim()));
-
-                if (prices.length !== 5 || weights.length !== 5) {
-                    tg.showAlert('⚠️ Il faut exactement 5 prix et 5 poids');
-                    return;
-                }
-
-                stock[category].push({
-                    name,
-                    image,
-                    prices,
-                    weights,
-                    stock_total: stockTotal
-                });
-
-                saveStock();
-                closeModal('addStockModal');
-                tg.showAlert(`✅ Stock ${category.toUpperCase()} mis à jour avec succès !`);
-
-                // Réinitialiser le formulaire
-                document.getElementById('productName').value = '';
-                document.getElementById('productImage').value = '';
-                document.getElementById('productPrices').value = '';
-                document.getElementById('productWeights').value = '';
-                document.getElementById('productStock').value = '';
-            } catch (e) {
-                tg.showAlert('⚠️ Format invalide');
-                console.error(e);
-            }
         }
 
         function closeModal(modalId) {
@@ -561,6 +610,22 @@
                 event.target.style.display = 'none';
             }
         }
+
+        // Rafraîchir le stock automatiquement toutes les 20 secondes
+        setInterval(async () => {
+            if (apiConnected) {
+                console.log('🔄 Auto-refresh du stock...');
+                await loadStock();
+            }
+        }, 20000);
+
+        // Rafraîchir quand l'utilisateur revient sur l'app
+        document.addEventListener('visibilitychange', async () => {
+            if (!document.hidden) {
+                console.log('👁️ App visible, refresh du stock');
+                await loadStock();
+            }
+        });
 
         init();
     </script>
