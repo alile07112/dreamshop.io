@@ -236,6 +236,12 @@
             width: 100%;
             margin-bottom: 15px;
         }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -331,21 +337,36 @@
             weed: []
         };
 
-        // Load stock from storage
-        function loadStock() {
-            const saved = localStorage.getItem('dreamshop_stock');
-            if (saved) {
-                stock = JSON.parse(saved);
+        // Charger le stock depuis ton serveur/API
+        async function loadStock() {
+            try {
+                // ⚠️ Change cette URL par ton vrai serveur si tu en as un
+                // Pour l'instant, on utilise localStorage
+                const saved = localStorage.getItem('dreamshop_stock');
+                if (saved) {
+                    stock = JSON.parse(saved);
+                    console.log("Stock chargé depuis localStorage:", stock);
+                } else {
+                    // Données de test
+                    stock = {
+                        hash: [],
+                        weed: []
+                    };
+                }
+            } catch (e) {
+                console.error("Erreur lors du chargement du stock:", e);
+                tg.showAlert("⚠️ Erreur lors du chargement du stock");
             }
         }
 
         function saveStock() {
             localStorage.setItem('dreamshop_stock', JSON.stringify(stock));
+            console.log("Stock sauvegardé:", stock);
         }
 
         // Initialize
-        function init() {
-            loadStock();
+        async function init() {
+            await loadStock();
             if (currentUser && currentUser.id === ADMIN_ID) {
                 document.getElementById('adminPanel').style.display = 'block';
             }
@@ -361,7 +382,7 @@
             currentCategory = category;
             const products = stock[category];
             
-            if (products.length === 0) {
+            if (!products || products.length === 0) {
                 tg.showAlert(`🕸️ Aucun produit dans la catégorie ${category.toUpperCase()} pour le moment.`);
                 return;
             }
@@ -376,8 +397,12 @@
             products.forEach((product, index) => {
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                
+                // Utiliser file_id ou image selon ce qui est disponible
+                const imageUrl = product.image || product.file_id || 'https://via.placeholder.com/400x250?text=Produit';
+                
                 card.innerHTML = `
-                    <img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250?text=Produit'">
+                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250?text=Produit'">
                     <div class="product-name">📦 ${product.name}</div>
                     <div class="product-actions">
                         <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
@@ -459,13 +484,13 @@
                 user: currentUser
             };
 
-            // Send to bot via Telegram
+            // Envoyer les données au bot Telegram
             tg.sendData(JSON.stringify(orderData));
 
             closeModal('addressModal');
             tg.showAlert(`✅ Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin pour validation.`);
             
-            // Clear form
+            // Réinitialiser le formulaire
             document.getElementById('addressInput').value = '';
             document.getElementById('phoneInput').value = '';
             
@@ -473,6 +498,10 @@
         }
 
         function showAddStock() {
+            if (!currentUser || currentUser.id !== ADMIN_ID) {
+                tg.showAlert('❌ Seul l\'admin peut faire cela.');
+                return;
+            }
             document.getElementById('addStockModal').style.display = 'block';
         }
 
@@ -510,7 +539,7 @@
                 closeModal('addStockModal');
                 tg.showAlert(`✅ Stock ${category.toUpperCase()} mis à jour avec succès !`);
 
-                // Clear form
+                // Réinitialiser le formulaire
                 document.getElementById('productName').value = '';
                 document.getElementById('productImage').value = '';
                 document.getElementById('productPrices').value = '';
@@ -518,6 +547,7 @@
                 document.getElementById('productStock').value = '';
             } catch (e) {
                 tg.showAlert('⚠️ Format invalide');
+                console.error(e);
             }
         }
 
@@ -525,7 +555,7 @@
             document.getElementById(modalId).style.display = 'none';
         }
 
-        // Close modals when clicking outside
+        // Fermer les modales au clic en dehors
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = 'none';
