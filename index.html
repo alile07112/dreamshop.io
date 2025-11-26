@@ -323,10 +323,11 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // ⚠️ IMPORTANT : Remplace par l'IP publique de ton RDP Windows
-        // Exemple : const API_URL = 'http://45.158.77.19:5000';
-        // Ou utilise ngrok : const API_URL = 'https://abc123.ngrok-free.app';
-        const API_URL = 'http://45.158.77.19:5000'; // ← CHANGE ICI
+        // ⚠️ IMPORTANT : Pour la production sur Netlify, utilisez l'URL relative '/api'.
+        // Netlify proxyera les requêtes `/api/*` vers votre API RDP (évite mixed-content & CORS).
+        // Si vous testez localement ou directement, vous pouvez remplacer par l'IP complète.
+        // Exemple direct : const API_URL = 'http://45.158.77.19:5000';
+        const API_URL = '/api';
 
         let currentUser = tg.initDataUnsafe?.user;
         let currentProduct = null;
