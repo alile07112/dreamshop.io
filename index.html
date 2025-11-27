@@ -494,15 +494,18 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 
-                // Gestion des images
+                // Gestion des images/vidéos depuis Telegram
                 let imageUrl = 'https://via.placeholder.com/400x250/667eea/ffffff?text=' + encodeURIComponent(product.name);
                 
-                if (product.image && product.image.startsWith('http')) {
+                // Si le produit a un file_id Telegram, utiliser l'endpoint /api/media
+                if (product.file_id) {
+                    imageUrl = `${API_URL}/media/${product.file_id}`;
+                } else if (product.image && product.image.startsWith('http')) {
                     imageUrl = product.image;
                 }
                 
                 card.innerHTML = `
-                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'">
+                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">
                     <div class="product-name">📦 ${product.name}</div>
                     <div class="product-actions">
                         <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
