@@ -221,25 +221,3 @@ def receive_order():
         print(f'❌ Erreur /api/order: {e}')
         return jsonify({'success': False, 'error': str(e)}), 500
 
-if __name__ == '__main__':
-    print("=" * 60)
-    print("🚀 API DREAMSHOP DÉMARRÉE")
-    print("=" * 60)
-    print(f"📡 Port: 5000")
-    print(f"🌍 Accessible depuis: http://45.158.77.19:5000")
-    print(f"📂 Fichier stock: {os.path.abspath(STOCK_FILE)}")
-    print(f"✅ CORS activé pour toutes les origines")
-    print("=" * 60)
-    
-    # Vérifier que le fichier stock existe
-    if not os.path.exists(STOCK_FILE):
-        print("⚠️  stock.json n'existe pas, création...")
-        save_stock({"hash": [], "weed": []})
-    
-    # Lancer le serveur sur toutes les interfaces
-    app.run(
-        host='45.158.77.19',  # Écoute sur toutes les interfaces
-        port=5000,
-        debug=False,     # Désactiver le debug en production
-        threaded=True    # Support multi-thread
-    )
