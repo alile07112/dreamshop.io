@@ -495,17 +495,24 @@
                 card.className = 'product-card';
                 
                 // Gestion des images/vidéos depuis Telegram
-                let imageUrl = 'https://via.placeholder.com/400x250/667eea/ffffff?text=' + encodeURIComponent(product.name);
+                let mediaHtml = `<img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Produit" class="product-image" alt="${product.name}">`;
                 
-                // Si le produit a un file_id Telegram, utiliser l'endpoint /api/media
+                // Si le produit a un file_id Telegram, afficher la vidéo/image via /api/media
                 if (product.file_id) {
-                    imageUrl = `${API_URL}/media/${product.file_id}`;
+                    const mediaUrl = `${API_URL}/media/${product.file_id}`;
+                    // Afficher comme vidéo (Telegram retourne généralement des vidéos MP4 pour les file_id vidéo)
+                    mediaHtml = `
+                        <video class="product-image" controls autoplay muted loop>
+                            <source src="${mediaUrl}" type="video/mp4">
+                            <img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Produit" alt="${product.name}">
+                        </video>
+                    `;
                 } else if (product.image && product.image.startsWith('http')) {
-                    imageUrl = product.image;
+                    mediaHtml = `<img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">`;
                 }
                 
                 card.innerHTML = `
-                    <img src="${imageUrl}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">
+                    ${mediaHtml}
                     <div class="product-name">📦 ${product.name}</div>
                     <div class="product-actions">
                         <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
