@@ -353,11 +353,30 @@
                     mediaHtml = `<img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">`;
                 }
                 
+                // Calculer prix et mini-liste depuis stock
+                const minPrice = (product.prices && product.prices.length) ? Math.min(...product.prices) : null;
+                let priceMiniHtml = '';
+                if (product.prices && product.prices.length) {
+                    priceMiniHtml = '<div class="price-mini">';
+                    for (let p = 0; p < Math.min(3, product.prices.length); p++) {
+                        const w = (product.weights && product.weights[p]) ? product.weights[p] + 'g' : '';
+                        priceMiniHtml += `<div class="price-item">${w} ${product.prices[p]}€</div>`;
+                    }
+                    priceMiniHtml += '</div>';
+                }
+
                 card.innerHTML = `
                     ${mediaHtml}
-                    <div class="product-name">📦 ${product.name}</div>
+                    <div class="product-meta">
+                      <div>
+                        <div class="product-name">📦 ${product.name}</div>
+                        <div class="product-sub">${product.stock_total ? product.stock_total + ' en stock' : ''}</div>
+                        ${priceMiniHtml}
+                      </div>
+                      ${minPrice ? `<div class="price-badge">À partir de ${minPrice}€</div>` : ''}
+                    </div>
                     <div class="product-actions">
-                        <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Prix</button>
+                        <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Détails</button>
                         <button class="btn-action btn-order" onclick="showOrder('${category}', ${index})">🛒 Commander</button>
                     </div>
                 `;
