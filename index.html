@@ -1,509 +1,295 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dream Shop</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        * { box-sizing: border-box; }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dream Shop</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+    :root{
+      --accent:#8b5cf6;
+      --accent-2:#06b6d4;
+      --muted:rgba(255,255,255,0.78);
+      --glass:rgba(255,255,255,0.04);
+      --card:rgba(255,255,255,0.03);
+      --radius:12px;
+      --max-width:980px;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
 
-        :root{
-            --bg-overlay: rgba(10,12,20,0.55);
-            --card-bg: rgba(255,255,255,0.06);
-            --muted: rgba(255,255,255,0.75);
-            --accent: #8b5cf6;
-            --accent-2: #06b6d4;
-            --glass: rgba(255,255,255,0.04);
-            --radius: 14px;
-            --max-width: 980px;
-            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-        }
+    html,body{height:100%;margin:0;background:#080a10;color:#fff}
+    body{
+      background-image: url('https://cdn.discordapp.com/attachments/1441799190790275218/1443395921105780836/photo_2025-11-26_20-24-31.jpg?ex=6928eab4&is=69279934&hm=57b6d744f5c2f69e5f076d4b1fcda68a144ff83cea788172910814b77275cdd3');
+      background-size:cover;background-position:center;display:flex;align-items:flex-start;justify-content:center;padding:28px;
+    }
 
-        html,body{height:100%;margin:0;padding:0;color:#fff;background:#0b0f1a;}
-        body{
-            background-image: url('https://cdn.discordapp.com/attachments/1441799190790275218/1443395921105780836/photo_2025-11-26_20-24-31.jpg?ex=6928eab4&is=69279934&hm=57b6d744f5c2f69e5f076d4b1fcda68a144ff83cea788172910814b77275cdd3');
-            background-size:cover;background-position:center;background-attachment:fixed;
-            display:flex;align-items:flex-start;justify-content:center;padding:36px 20px;
-        }
+    .app-shell{width:100%;max-width:var(--max-width);background:linear-gradient(180deg, rgba(6,8,12,0.55), rgba(6,8,12,0.75));backdrop-filter:blur(6px);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(2,6,23,0.6)}
 
-        .app-shell{width:100%;max-width:var(--max-width);backdrop-filter: blur(6px);background:linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.5));border-radius:18px;overflow:hidden;box-shadow:0 10px 40px rgba(2,6,23,0.6)}
+    /* Topbar */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.03)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{margin:0;font-size:18px;letter-spacing:0.3px}
+    .brand small{display:block;color:var(--muted);font-size:12px}
 
-        .topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid rgba(255,255,255,0.03)}
-        .brand{display:flex;align-items:center;gap:14px}
-        .brand h1{font-size:20px;margin:0;letter-spacing:0.4px;font-weight:700}
-        .brand p{margin:0;font-size:12px;color:var(--muted)}
+    .api-status{font-size:13px;padding:8px 12px;border-radius:999px;background:var(--glass);color:var(--muted)}
 
-        .status{font-size:13px;padding:8px 12px;border-radius:999px;background:var(--glass);color:var(--muted);box-shadow:inset 0 -2px 8px rgba(0,0,0,0.25)}
+    /* Layout */
+    .layout{display:flex;gap:18px;padding:18px}
+    .sidebar{width:240px;flex:0 0 240px;padding:10px}
+    .main{flex:1;padding:6px}
 
-        .container{padding:22px;display:flex;gap:20px}
+    /* Categories */
+    .categories{display:flex;flex-direction:column;gap:10px}
+    .cat-btn{padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+    .cat-btn.hash{background:linear-gradient(90deg,var(--accent),#f97316);color:#fff}
+    .cat-btn.weed{background:linear-gradient(90deg,var(--accent-2),#60a5fa);color:#fff}
 
-        /* sidebar + content layout for larger screens */
-        .sidebar{width:260px;flex:0 0 260px}
-        .main{flex:1}
+    /* Grid */
+    .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 
-        .sidebar .card{background:var(--card-bg);padding:14px;border-radius:12px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));padding:10px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.45);display:flex;flex-direction:column;gap:10px}
 
-        .category-buttons{display:flex;flex-direction:column;gap:12px}
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 14px;border-radius:12px;border:none;cursor:pointer;font-weight:600}
-        .btn-hash{background:linear-gradient(90deg,var(--accent),#f97316);color:#fff}
-        .btn-weed{background:linear-gradient(90deg,var(--accent-2),#60a5fa);color:#fff}
+    .media{height:170px;background:#000;border-radius:10px;overflow:hidden}
+    .media img,.media video{width:100%;height:100%;object-fit:cover;display:block}
 
-        .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
+    .meta{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+    .meta .title{font-weight:700}
+    .meta .sub{font-size:13px;color:var(--muted)}
 
-        .product-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:10px;box-shadow:0 6px 20px rgba(2,6,23,0.6);overflow:hidden;display:flex;flex-direction:column}
+    .price-badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:6px 10px;border-radius:999px;font-weight:800;font-size:13px}
 
-        .media-wrap{width:100%;height:180px;background:#000;border-radius:10px;overflow:hidden;position:relative}
-        .media-wrap img,.media-wrap video{width:100%;height:100%;object-fit:cover;display:block}
+    .mini-prices{display:flex;gap:8px;flex-wrap:wrap}
+    .mini-prices .p{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted)}
 
-        .product-meta{display:flex;align-items:center;justify-content:space-between;padding:10px 6px}
-        .product-name{font-size:15px;font-weight:700;color:#fff}
-        .product-sub{font-size:13px;color:var(--muted)}
+    .actions{display:flex;gap:8px}
+    .actions button{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s ease}
+    .actions .details{background:#111827;color:#fbbf24}
+    .actions .details:hover{background:#1f2937;transform:translateY(-2px);box-shadow:0 4px 12px rgba(251,191,36,0.15)}
+    .actions .order{background:#10b981;color:#fff}
+    .actions .order:hover{background:#059669;transform:translateY(-2px);box-shadow:0 4px 12px rgba(16,185,129,0.3)}
 
-        /* Price badge + hover animations */
-        .price-badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:6px 10px;border-radius:999px;color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(99,102,241,0.18)}
-        .price-mini{display:flex;gap:8px;margin-top:6px}
-        .price-mini .price-item{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted)}
+    /* Modals (simple) */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:20px}
+    .modal .content{background:linear-gradient(180deg, rgba(12,14,22,0.96), rgba(6,8,14,0.98));padding:18px;border-radius:12px;max-width:640px;width:100%}
+    .modal h3{margin-top:0}
+    .close{float:right;cursor:pointer;background:transparent;border:none;color:var(--muted);font-size:20px}
 
-        .product-card{transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
-        .product-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 18px 40px rgba(2,6,23,0.7)}
+    /* Responsive */
+    @media (max-width:880px){
+      .layout{flex-direction:column}
+      .sidebar{width:100%}
+    }
 
-        .btn-action{transition:transform .18s ease, box-shadow .18s ease}
-        .btn-action:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(2,6,23,0.4)}
+    /* Hover & animations */
+    .card{transition:all .25s cubic-bezier(0.4,0,0.2,1)}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(2,6,23,0.6)}
 
-        .product-actions{display:flex;gap:8px;padding:8px}
-        .btn-action{flex:1;padding:10px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-        .btn-prices{background:#111827;color:#fbbf24}
-        .btn-order{background:#10b981;color:#fff}
+    .cat-btn{transition:all .2s ease}
+    .cat-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(139,92,246,0.25)}
 
-        /* modal tweaks */
-        .modal-content{background:linear-gradient(180deg, rgba(12,14,22,0.95), rgba(6,8,14,0.98));max-width:640px}
+    textarea,input{box-sizing:border-box;font-family:inherit;font-size:14px}
+    textarea:focus,input:focus{outline:none;border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.06)}
 
-        .back-btn{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04);padding:10px;border-radius:10px}
-
-        @media (max-width:880px){.container{flex-direction:column}.sidebar{width:100%}.main{width:100%}}
-    </style>
+    /* Button states */
+    button:active{transform:scale(0.98)}
+    button:disabled{opacity:0.5;cursor:not-allowed}
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">
-            <h1>🛒 DREAM SHOP</h1>
-            <p>BOT POUR COMMANDER HASH-WEED-CALI<br>SUPPORT: @DREAMSHOP390</p>
-        </div>
-
-        <div id="apiStatus" class="api-status">
-            🔄 Connexion à l'API...
-        </div>
-
-        <!-- Category Selection -->
-        <div id="categoryView">
-            <div class="category-buttons">
-                <button class="btn btn-hash" onclick="showProducts('hash')">HASH 🍫</button>
-                <button class="btn btn-weed" onclick="showProducts('weed')">WEED 🌱</button>
-            </div>
-        </div>
-
-        <!-- Products View -->
-        <div id="productsView" style="display: none;">
-            <button class="back-btn" onclick="showHome()">← Retour</button>
-            <h2 id="categoryTitle" style="margin-bottom: 20px;"></h2>
-            <div class="products-grid" id="productsGrid"></div>
-        </div>
-
-        <!-- Price Modal -->
-        <div id="priceModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('priceModal')">&times;</span>
-                <h2 id="priceModalTitle"></h2>
-                <div class="price-list" id="priceList"></div>
-                <button class="btn-submit" onclick="showOrderFromPrice()">🛒 Commander</button>
-            </div>
-        </div>
-
-        <!-- Order Modal -->
-        <div id="orderModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('orderModal')">&times;</span>
-                <h2 id="orderModalTitle"></h2>
-                <div class="weight-buttons" id="weightButtons"></div>
-            </div>
-        </div>
-
-        <!-- Address Modal -->
-        <div id="addressModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('addressModal')">&times;</span>
-                <h2>📍 Informations de livraison</h2>
-                <textarea id="addressInput" placeholder="🏠 Adresse complète (numéro, rue, ville, code postal)" rows="3"></textarea>
-                <input type="tel" id="phoneInput" placeholder="📞 Numéro de téléphone">
-                <button class="btn-submit" onclick="submitOrder()">✅ Confirmer la commande</button>
-            </div>
-        </div>
+  <div class="app-shell">
+    <div class="topbar">
+      <div class="brand">
+        <h1>🛒 DREAM SHOP</h1>
+        <small>Bot de commande — Support: @DREAMSHOP390</small>
+      </div>
+      <div id="apiStatus" class="api-status">🔄 Connexion à l'API...</div>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="categories">
+          <button class="cat-btn hash" onclick="showProducts('hash')">HASH 🍫 <span style="opacity:0.9"></span></button>
+          <button class="cat-btn weed" onclick="showProducts('weed')">WEED 🌱</button>
+        </div>
+      </aside>
 
-        // ⚠️ IMPORTANT : Pour la production sur Netlify, utilisez l'URL relative '/api'.
-        // Netlify proxyera les requêtes `/api/*` vers votre API RDP (évite mixed-content & CORS).
-        // Si vous testez localement ou directement, vous pouvez remplacer par l'IP complète.
-        // Exemple direct : const API_URL = 'http://45.158.77.19:5000';
-        const API_URL = '/api';
+      <main class="main">
+        <div id="categoryView">
+          <h2 style="margin:6px 0 12px 0">Choisis une catégorie</h2>
+        </div>
 
-        let currentUser = tg.initDataUnsafe?.user;
-        let currentProduct = null;
-        let currentCategory = null;
-        let selectedWeight = null;
-        let selectedPrice = null;
-        let apiConnected = false;
+        <div id="productsView" style="display:none">
+          <button onclick="showHome()" style="margin-bottom:12px;padding:8px 12px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted)">← Retour</button>
+          <h2 id="categoryTitle" style="margin:6px 0 12px 0"></h2>
+          <div class="products-grid" id="productsGrid"></div>
+        </div>
+      </main>
+    </div>
 
-        // Stock data
-        let stock = {
-            hash: [],
-            weed: []
-        };
+    <!-- Modals -->
+    <div id="priceModal" class="modal"><div class="content"><button class="close" onclick="closeModal('priceModal')">&times;</button><h3 id="priceModalTitle"></h3><div id="priceList" style="margin:12px 0"></div><div><button onclick="showOrderFromPrice()" style="width:100%;padding:12px;border-radius:10px;background:#10b981;color:#fff;border:none;font-weight:700;cursor:pointer;transition:all .2s ease" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">🛒 Commander</button></div></div></div>
 
-        // Mettre à jour le statut de l'API
-        function updateApiStatus(connected, message) {
-            const statusEl = document.getElementById('apiStatus');
-            if (connected) {
-                statusEl.className = 'api-status connected';
-                statusEl.textContent = '✅ ' + message;
-                apiConnected = true;
-            } else {
-                statusEl.className = 'api-status disconnected';
-                statusEl.textContent = '❌ ' + message;
-                apiConnected = false;
-            }
+    <div id="orderModal" class="modal"><div class="content"><button class="close" onclick="closeModal('orderModal')">&times;</button><h3 id="orderModalTitle"></h3><div id="weightButtons" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"></div></div></div>
+
+    <div id="addressModal" class="modal"><div class="content"><button class="close" onclick="closeModal('addressModal')">&times;</button><h3>📍 Informations de livraison</h3><textarea id="addressInput" placeholder="Adresse complète" rows="3" style="width:100%;margin-top:12px;border-radius:8px;padding:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);color:#fff;resize:none"></textarea><input id="phoneInput" type="tel" placeholder="Téléphone" style="width:100%;margin-top:10px;border-radius:8px;padding:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);color:#fff"><div style="margin-top:12px"><button onclick="submitOrder()" style="width:100%;padding:12px;border-radius:10px;background:#10b981;color:#fff;border:none;font-weight:700;cursor:pointer;transition:all .2s ease" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">✅ Confirmer</button></div></div></div>
+
+  </div>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    // Pour Netlify en prod, garder '/api'
+    const API_URL = '/api';
+
+    let currentUser = tg.initDataUnsafe?.user;
+    let currentProduct = null;
+    let currentCategory = null;
+    let selectedWeight = null;
+    let selectedPrice = null;
+    let apiConnected = false;
+
+    let stock = {hash:[], weed:[]};
+
+    function updateApiStatus(connected, message){
+      const el = document.getElementById('apiStatus');
+      el.textContent = (connected? '✅ ' : '❌ ') + message;
+      apiConnected = !!connected;
+    }
+
+    async function checkApiConnection(){
+      try{
+        const r = await fetch(`${API_URL}/api/health`);
+        if(!r.ok) throw new Error(r.status);
+        const j = await r.json();
+        updateApiStatus(true, 'Connecté au serveur RDP');
+        return true;
+      }catch(e){
+        console.error('API health error',e);
+        updateApiStatus(false, 'Serveur RDP inaccessible');
+        return false;
+      }
+    }
+
+    async function loadStock(){
+      try{
+        const r = await fetch(`${API_URL}/api/stock`);
+        if(!r.ok) throw new Error(r.status);
+        stock = await r.json();
+        localStorage.setItem('dreamshop_stock_cache', JSON.stringify(stock));
+        localStorage.setItem('dreamshop_stock_timestamp', Date.now());
+        updateApiStatus(true, `Connecté - ${stock.hash.length} hash, ${stock.weed.length} weed`);
+      }catch(e){
+        console.warn('loadStock failed',e);
+        const cached = localStorage.getItem('dreamshop_stock_cache');
+        if(cached){
+          stock = JSON.parse(cached);
+          updateApiStatus(false, 'Mode hors-ligne (cache)');
+        }else{
+          updateApiStatus(false, 'Aucun stock disponible');
+        }
+      }
+    }
+
+    async function init(){
+      updateApiStatus(false,'Connexion...');
+      await checkApiConnection();
+      await loadStock();
+      tg.ready();
+    }
+
+    function showHome(){
+      document.getElementById('productsView').style.display = 'none';
+      document.getElementById('categoryView').style.display = 'block';
+    }
+
+    async function showProducts(category){
+      currentCategory = category;
+      document.getElementById('categoryView').style.display = 'none';
+      document.getElementById('productsView').style.display = 'block';
+      document.getElementById('categoryTitle').textContent = category.toUpperCase() + (category==='hash'? ' 🍫':' 🌱');
+
+      await loadStock();
+      const grid = document.getElementById('productsGrid');
+      const products = stock[category] || [];
+      if(products.length===0){ grid.innerHTML = '<div style="padding:20px">🕸️ Aucun produit pour l’instant.</div>'; return; }
+
+      grid.innerHTML = '';
+      products.forEach((product, idx)=>{
+        const card = document.createElement('div'); card.className='card';
+
+        // media
+        const mediaWrap = document.createElement('div'); mediaWrap.className='media';
+        if(product.file_id){
+          const vid = document.createElement('video'); vid.controls=true; vid.preload='metadata'; vid.style.width='100%'; vid.style.height='100%'; vid.style.objectFit='cover';
+          mediaWrap.appendChild(vid);
+          // fetch actual media URL
+          (async ()=>{
+            try{
+              const resp = await fetch(`${API_URL}/video/${product.file_id}`);
+              if(resp.ok){ const j = await resp.json(); if(j.media_url) { vid.src = j.media_url; vid.load(); } }
+            }catch(e){ console.warn('media fetch',e); }
+          })();
+        } else if(product.image && product.image.startsWith('http')){
+          const img = document.createElement('img'); img.src=product.image; img.alt=product.name; img.onerror=function(){this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'}; mediaWrap.appendChild(img);
+        } else {
+          const ph = document.createElement('div'); ph.style.width='100%'; ph.style.height='100%'; ph.style.display='flex'; ph.style.alignItems='center'; ph.style.justifyContent='center'; ph.style.color='var(--muted)'; ph.textContent='Image indisponible'; mediaWrap.appendChild(ph);
         }
 
-        // Vérifier la connexion à l'API
-        async function checkApiConnection() {
-            try {
-                console.log('🔍 Vérification connexion API:', API_URL);
-                const response = await fetch(`${API_URL}/api/health`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
+        // meta
+        const meta = document.createElement('div'); meta.className='meta';
+        const left = document.createElement('div');
+        const t = document.createElement('div'); t.className='title'; t.textContent = '📦 ' + product.name; left.appendChild(t);
+        const s = document.createElement('div'); s.className='sub'; s.textContent = product.stock_total? product.stock_total + ' en stock':''; left.appendChild(s);
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('✅ API connectée:', data);
-                    updateApiStatus(true, 'Connecté au serveur RDP');
-                    return true;
-                } else {
-                    throw new Error('HTTP ' + response.status);
-                }
-            } catch (e) {
-                console.error('❌ Erreur connexion API:', e);
-                updateApiStatus(false, 'Serveur RDP inaccessible');
-                return false;
-            }
+        const right = document.createElement('div');
+        const minPrice = (product.prices && product.prices.length)? Math.min(...product.prices):null;
+        if(minPrice) right.innerHTML = `<div class="price-badge">À partir de ${minPrice}€</div>`;
+
+        meta.appendChild(left); meta.appendChild(right);
+
+        // mini prices
+        const mini = document.createElement('div'); mini.className='mini-prices';
+        if(product.prices && product.prices.length){
+          for(let i=0;i<Math.min(3,product.prices.length);i++){ const p = document.createElement('div'); p.className='p'; p.textContent = (product.weights && product.weights[i]? product.weights[i]+'g ':'') + product.prices[i]+'€'; mini.appendChild(p); }
         }
 
-        // Charger le stock depuis l'API RDP
-        async function loadStock() {
-            try {
-                console.log('📦 Chargement du stock depuis:', API_URL);
-                
-                const response = await fetch(`${API_URL}/api/stock`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                stock = await response.json();
-                console.log('✅ Stock chargé:', stock);
-                
-                // Sauvegarder en cache local
-                localStorage.setItem('dreamshop_stock_cache', JSON.stringify(stock));
-                localStorage.setItem('dreamshop_stock_timestamp', Date.now());
-                
-                updateApiStatus(true, `Connecté - ${stock.hash.length} hash, ${stock.weed.length} weed`);
-                
-            } catch (e) {
-                console.error('❌ Erreur chargement stock:', e);
-                updateApiStatus(false, 'Utilisation du cache local');
-                
-                // Fallback sur le cache local
-                const cached = localStorage.getItem('dreamshop_stock_cache');
-                const timestamp = localStorage.getItem('dreamshop_stock_timestamp');
-                
-                if (cached) {
-                    stock = JSON.parse(cached);
-                    const cacheAge = Math.floor((Date.now() - parseInt(timestamp)) / 60000);
-                    console.log(`📦 Stock chargé depuis le cache (${cacheAge} min)`);
-                    tg.showPopup({
-                        title: '⚠️ Mode hors ligne',
-                        message: `Données en cache (${cacheAge} min). Vérifie que l'API est démarrée sur le RDP.`,
-                        buttons: [{type: 'ok'}]
-                    });
-                } else {
-                    tg.showPopup({
-                        title: '❌ Erreur',
-                        message: 'Impossible de charger le stock. Contacte @DREAMSHOP390',
-                        buttons: [{type: 'ok'}]
-                    });
-                }
-            }
-        }
+        // actions
+        const actions = document.createElement('div'); actions.className='actions';
+        const btnD = document.createElement('button'); btnD.className='details'; btnD.textContent='💰 Détails'; btnD.onclick = ()=> showPrices(category, idx);
+        const btnO = document.createElement('button'); btnO.className='order'; btnO.textContent='🛒 Commander'; btnO.onclick = ()=> showOrder(category, idx);
+        actions.appendChild(btnD); actions.appendChild(btnO);
 
-        // Initialize
-        async function init() {
-            console.log('🚀 Initialisation DreamShop Mini-App...');
-            console.log('👤 User:', currentUser);
-            
-            updateApiStatus(false, 'Connexion...');
-            
-            // Vérifier la connexion
-            await checkApiConnection();
-            
-            // Charger le stock
-            await loadStock();
-            
-            tg.ready();
-            console.log('✅ Mini-App prête');
-        }
+        card.appendChild(mediaWrap); card.appendChild(meta); card.appendChild(mini); card.appendChild(actions);
+        grid.appendChild(card);
+      });
+    }
 
-        function showHome() {
-            document.getElementById('productsView').style.display = 'none';
-            document.getElementById('categoryView').style.display = 'block';
-        }
+    function showPrices(category, index){
+      const product = (stock[category]||[])[index]; if(!product) return;
+      currentProduct = {category,index,product};
+      document.getElementById('priceModalTitle').textContent = `💨 ${product.name}`;
+      const list = document.getElementById('priceList'); list.innerHTML='';
+      (product.weights||[]).forEach((w,i)=>{ const d=document.createElement('div'); d.style.padding='6px 0'; d.textContent = `⚖️ ${w}g → ${product.prices[i]}€`; list.appendChild(d); });
+      document.getElementById('priceModal').style.display='flex';
+    }
 
-        async function showProducts(category) {
-            currentCategory = category;
-            
-            // Afficher un loader
-            const grid = document.getElementById('productsGrid');
-            grid.innerHTML = '<div class="loading">Chargement des produits</div>';
-            
-            document.getElementById('categoryView').style.display = 'none';
-            document.getElementById('productsView').style.display = 'block';
-            document.getElementById('categoryTitle').textContent = category.toUpperCase() + (category === 'hash' ? ' 🍫' : ' 🌱');
-            
-            // Recharger le stock depuis le RDP
-            console.log(`🔄 Rechargement catégorie: ${category}`);
-            await loadStock();
-            
-            const products = stock[category];
-            
-            if (!products || products.length === 0) {
-                grid.innerHTML = `
-                    <div class="loading">
-                        🕸️ Aucun produit dans la catégorie ${category.toUpperCase()} pour le moment.
-                    </div>
-                `;
-                return;
-            }
+    function showOrderFromPrice(){ closeModal('priceModal'); showOrder(currentProduct.category, currentProduct.index); }
 
-            grid.innerHTML = '';
+    function showOrder(category,index){ const product = (stock[category]||[])[index]; if(!product) return; currentProduct={category,index,product}; document.getElementById('orderModalTitle').textContent = `⚖️ Choisis ton poids pour ${product.name}`; const container=document.getElementById('weightButtons'); container.innerHTML=''; (product.weights||[]).forEach((w,i)=>{ const b=document.createElement('button'); b.textContent = `${w}g - ${product.prices[i]}€`; b.style.cssText = 'padding:8px 12px;border-radius:8px;border:none;background:var(--card);color:var(--muted);cursor:pointer;font-weight:700;transition:all .2s ease'; b.onmouseover = ()=>{ b.style.background='rgba(139,92,246,0.3)'; b.style.color='#fff'; }; b.onmouseout = ()=>{ b.style.background='var(--card)'; b.style.color='var(--muted)'; }; b.onclick = ()=> selectWeight(w,product.prices[i]); container.appendChild(b); }); document.getElementById('orderModal').style.display='flex'; }
 
-            products.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'product-card';
-                
-                // Gestion des vidéos depuis Telegram
-                let mediaHtml = `<img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Produit" class="product-image" alt="${product.name}">`;
-                
-                // Si le produit a un file_id Telegram, afficher la vidéo
-                if (product.file_id) {
-                    // Construire l'ID et l'URL endpoint qui retourne JSON { media_url }
-                    const vidId = `video-${category}-${index}`;
-                    const endpointUrl = `${API_URL}/video/${product.file_id}`;
+    function selectWeight(weight,price){ selectedWeight=weight; selectedPrice=price; closeModal('orderModal'); document.getElementById('addressModal').style.display='flex'; }
 
-                    mediaHtml = `
-                        <div style="width:100%;height:250px;background:#000;border-radius:15px;position:relative;overflow:hidden;">
-                            <video id="${vidId}" style="width:100%;height:100%;object-fit:cover;" controls preload="metadata">
-                                <!-- source will be set dynamically after fetching media_url -->
-                                Votre navigateur ne supporte pas les vidéos.
-                            </video>
-                        </div>
-                    `;
+    function submitOrder(){ const address=document.getElementById('addressInput').value.trim(); const phone=document.getElementById('phoneInput').value.trim(); if(!address||!phone){ tg.showAlert('⚠️ Remplis tous les champs'); return; } const orderData={ product: currentProduct.product.name, category: currentProduct.category, weight: selectedWeight, price: selectedPrice, address, phone, user: currentUser||{id:0,username:'unknown'} }; tg.sendData(JSON.stringify(orderData)); closeModal('addressModal'); tg.showPopup({title:'✅ Commande envoyée',message:`Ta commande pour ${currentProduct.product.name} a bien été envoyée.`,buttons:[{type:'ok'}]}); document.getElementById('addressInput').value=''; document.getElementById('phoneInput').value=''; showHome(); }
 
-                    // Après insertion du card, on récupérera l'URL réelle et on l'assignera au src
-                    setTimeout(async () => {
-                        try {
-                            const resp = await fetch(endpointUrl);
-                            if (!resp.ok) throw new Error('no media url');
-                            const j = await resp.json();
-                            if (j && j.media_url) {
-                                const v = document.getElementById(vidId);
-                                if (v) {
-                                    v.src = j.media_url;
-                                    // reload metadata to enable controls and duration
-                                    v.load();
-                                }
-                            }
-                        } catch (err) {
-                            console.error('Erreur fetch media_url', err);
-                        }
-                    }, 0);
-                } else if (product.image && product.image.startsWith('http')) {
-                    mediaHtml = `<img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">`;
-                }
-                
-                // Calculer prix et mini-liste depuis stock
-                const minPrice = (product.prices && product.prices.length) ? Math.min(...product.prices) : null;
-                let priceMiniHtml = '';
-                if (product.prices && product.prices.length) {
-                    priceMiniHtml = '<div class="price-mini">';
-                    for (let p = 0; p < Math.min(3, product.prices.length); p++) {
-                        const w = (product.weights && product.weights[p]) ? product.weights[p] + 'g' : '';
-                        priceMiniHtml += `<div class="price-item">${w} ${product.prices[p]}€</div>`;
-                    }
-                    priceMiniHtml += '</div>';
-                }
+    function closeModal(id){ document.getElementById(id).style.display='none'; }
+    window.onclick = (e)=>{ if(e.target.classList && e.target.classList.contains('modal')) e.target.style.display='none'; }
 
-                card.innerHTML = `
-                    ${mediaHtml}
-                    <div class="product-meta">
-                      <div>
-                        <div class="product-name">📦 ${product.name}</div>
-                        <div class="product-sub">${product.stock_total ? product.stock_total + ' en stock' : ''}</div>
-                        ${priceMiniHtml}
-                      </div>
-                      ${minPrice ? `<div class="price-badge">À partir de ${minPrice}€</div>` : ''}
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn-action btn-prices" onclick="showPrices('${category}', ${index})">💰 Détails</button>
-                        <button class="btn-action btn-order" onclick="showOrder('${category}', ${index})">🛒 Commander</button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
+    setInterval(async ()=>{ if(apiConnected) await loadStock(); },20000);
+    document.addEventListener('visibilitychange', async ()=>{ if(!document.hidden) await loadStock(); });
 
-        function showPrices(category, index) {
-            const product = stock[category][index];
-            currentProduct = { category, index, product };
-
-            document.getElementById('priceModalTitle').textContent = `💨 ${product.name}`;
-            
-            const list = document.getElementById('priceList');
-            list.innerHTML = '';
-            
-            product.weights.forEach((weight, i) => {
-                const price = product.prices[i];
-                const item = document.createElement('div');
-                item.className = 'price-item';
-                item.textContent = `⚖️ ${weight}g → ${price}€`;
-                list.appendChild(item);
-            });
-
-            document.getElementById('priceModal').style.display = 'block';
-        }
-
-        function showOrderFromPrice() {
-            closeModal('priceModal');
-            showOrder(currentProduct.category, currentProduct.index);
-        }
-
-        function showOrder(category, index) {
-            const product = stock[category][index];
-            currentProduct = { category, index, product };
-
-            document.getElementById('orderModalTitle').textContent = `⚖️ Choisis ton poids pour ${product.name}`;
-            
-            const buttons = document.getElementById('weightButtons');
-            buttons.innerHTML = '';
-            
-            product.weights.forEach((weight, i) => {
-                const price = product.prices[i];
-                const btn = document.createElement('button');
-                btn.className = 'btn-weight';
-                btn.textContent = `${weight}g - ${price}€`;
-                btn.onclick = () => selectWeight(weight, price);
-                buttons.appendChild(btn);
-            });
-
-            document.getElementById('orderModal').style.display = 'block';
-        }
-
-        function selectWeight(weight, price) {
-            selectedWeight = weight;
-            selectedPrice = price;
-            closeModal('orderModal');
-            document.getElementById('addressModal').style.display = 'block';
-        }
-
-        function submitOrder() {
-            const address = document.getElementById('addressInput').value.trim();
-            const phone = document.getElementById('phoneInput').value.trim();
-
-            if (!address || !phone) {
-                tg.showAlert('⚠️ Remplis tous les champs');
-                return;
-            }
-
-            const orderData = {
-                product: currentProduct.product.name,
-                category: currentProduct.category,
-                weight: selectedWeight,
-                price: selectedPrice,
-                address: address,
-                phone: phone,
-                user: currentUser || {id: 0, username: 'unknown'}
-            };
-
-            console.log('📦 Envoi commande:', orderData);
-
-            // Envoyer les données au bot Telegram
-            tg.sendData(JSON.stringify(orderData));
-
-            closeModal('addressModal');
-            
-            tg.showPopup({
-                title: '✅ Commande envoyée',
-                message: `Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin pour validation.`,
-                buttons: [{type: 'ok'}]
-            });
-            
-            // Réinitialiser le formulaire
-            document.getElementById('addressInput').value = '';
-            document.getElementById('phoneInput').value = '';
-            
-            showHome();
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-
-        // Fermer les modales au clic en dehors
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-
-        // Rafraîchir le stock automatiquement toutes les 20 secondes
-        setInterval(async () => {
-            if (apiConnected) {
-                console.log('🔄 Auto-refresh du stock...');
-                await loadStock();
-            }
-        }, 20000);
-
-        // Rafraîchir quand l'utilisateur revient sur l'app
-        document.addEventListener('visibilitychange', async () => {
-            if (!document.hidden) {
-                console.log('👁️ App visible, refresh du stock');
-                await loadStock();
-            }
-        });
-
-        init();
-    </script>
+    init();
+  </script>
 </body>
 </html>
