@@ -499,16 +499,37 @@
                 
                 // Si le produit a un file_id Telegram, afficher la vidéo
                 if (product.file_id) {
-                    // Construire l'URL directe Telegram (via notre endpoint qui retourne l'URL)
-                    const videoUrl = `${API_URL}/video/${product.file_id}`;
+                    // Construire l'ID et l'URL endpoint qui retourne JSON { media_url }
+                    const vidId = `video-${category}-${index}`;
+                    const endpointUrl = `${API_URL}/video/${product.file_id}`;
+
                     mediaHtml = `
                         <div style="width:100%;height:250px;background:#000;border-radius:15px;position:relative;overflow:hidden;">
-                            <video style="width:100%;height:100%;object-fit:cover;" controls>
-                                <source src="${videoUrl}" type="video/mp4">
+                            <video id="${vidId}" style="width:100%;height:100%;object-fit:cover;" controls preload="metadata">
+                                <!-- source will be set dynamically after fetching media_url -->
                                 Votre navigateur ne supporte pas les vidéos.
                             </video>
                         </div>
                     `;
+
+                    // Après insertion du card, on récupérera l'URL réelle et on l'assignera au src
+                    setTimeout(async () => {
+                        try {
+                            const resp = await fetch(endpointUrl);
+                            if (!resp.ok) throw new Error('no media url');
+                            const j = await resp.json();
+                            if (j && j.media_url) {
+                                const v = document.getElementById(vidId);
+                                if (v) {
+                                    v.src = j.media_url;
+                                    // reload metadata to enable controls and duration
+                                    v.load();
+                                }
+                            }
+                        } catch (err) {
+                            console.error('Erreur fetch media_url', err);
+                        }
+                    }, 0);
                 } else if (product.image && product.image.startsWith('http')) {
                     mediaHtml = `<img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">`;
                 }
