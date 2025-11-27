@@ -136,8 +136,9 @@
     const tg = window.Telegram.WebApp;
     tg.expand();
 
-    // Pour Netlify en prod, garder '/api'
-    const API_URL = '/api';
+    // Pour Netlify en prod, le proxy redirige /api/* vers le RDP
+    // Ici on utilise des URLs relatives (pas de double /api)
+    const API_URL = '';
 
     let currentUser = tg.initDataUnsafe?.user;
     let currentProduct = null;
