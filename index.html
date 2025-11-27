@@ -61,6 +61,17 @@
         .product-name{font-size:15px;font-weight:700;color:#fff}
         .product-sub{font-size:13px;color:var(--muted)}
 
+        /* Price badge + hover animations */
+        .price-badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));padding:6px 10px;border-radius:999px;color:#fff;font-weight:800;font-size:13px;box-shadow:0 6px 18px rgba(99,102,241,0.18)}
+        .price-mini{display:flex;gap:8px;margin-top:6px}
+        .price-mini .price-item{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted)}
+
+        .product-card{transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease}
+        .product-card:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 18px 40px rgba(2,6,23,0.7)}
+
+        .btn-action{transition:transform .18s ease, box-shadow .18s ease}
+        .btn-action:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(2,6,23,0.4)}
+
         .product-actions{display:flex;gap:8px;padding:8px}
         .btn-action{flex:1;padding:10px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
         .btn-prices{background:#111827;color:#fbbf24}
