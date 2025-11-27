@@ -142,7 +142,7 @@
 
     // Pour Netlify en prod, le proxy redirige /api/* vers le RDP
     // Ici on utilise des URLs relatives (pas de double /api)
-    const API_URL = '';
+    const API_URL = 'https://dreamshop-io.onrender.com';
 
     let currentUser = tg.initDataUnsafe?.user;
     let currentProduct = null;
@@ -236,7 +236,7 @@
           // fetch actual media URL
           (async ()=>{
             try{
-              const resp = await fetch(`${API_URL}/video/${product.file_id}`);
+              const resp = await fetch(`${API_URL}/api/video/${product.file_id}`);
               if(resp.ok){ const j = await resp.json(); if(j.media_url) { vid.src = j.media_url; vid.load(); } }
             }catch(e){ console.warn('media fetch',e); }
           })();
