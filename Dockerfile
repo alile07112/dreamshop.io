@@ -13,4 +13,4 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5000
 
-CMD ["python", "api.py"]
+CMD ["gunicorn", "api:app", "--bind", "0.0.0.0:5000"]
