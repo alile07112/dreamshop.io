@@ -494,17 +494,20 @@
                 const card = document.createElement('div');
                 card.className = 'product-card';
                 
-                // Gestion des vidéos/images depuis Telegram
+                // Gestion des vidéos depuis Telegram
                 let mediaHtml = `<img src="https://via.placeholder.com/400x250/667eea/ffffff?text=Produit" class="product-image" alt="${product.name}">`;
                 
-                // Si le produit a un file_id Telegram, afficher en vidéo proxiée
+                // Si le produit a un file_id Telegram, afficher la vidéo
                 if (product.file_id) {
+                    // Construire l'URL directe Telegram (via notre endpoint qui retourne l'URL)
                     const videoUrl = `${API_URL}/video/${product.file_id}`;
                     mediaHtml = `
-                        <video class="product-image" controls autoplay muted loop style="width:100%;height:250px;object-fit:cover;border-radius:15px;background:#000;">
-                            <source src="${videoUrl}" type="video/mp4">
-                            <p>Votre navigateur ne supporte pas la lecture vidéo.</p>
-                        </video>
+                        <div style="width:100%;height:250px;background:#000;border-radius:15px;position:relative;overflow:hidden;">
+                            <video style="width:100%;height:100%;object-fit:cover;" controls>
+                                <source src="${videoUrl}" type="video/mp4">
+                                Votre navigateur ne supporte pas les vidéos.
+                            </video>
+                        </div>
                     `;
                 } else if (product.image && product.image.startsWith('http')) {
                     mediaHtml = `<img src="${product.image}" class="product-image" onerror="this.src='https://via.placeholder.com/400x250/667eea/ffffff?text=Produit'" alt="${product.name}">`;
