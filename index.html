@@ -18,21 +18,20 @@
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
     }
 
-    html,body{height:100%;margin:0;background:#080a10;color:#fff}
+    html,body{height:100%;margin:0;background:#f5f7fa;color:#111}
     body{
-      background-image: url('https://cdn.discordapp.com/attachments/1441799190790275218/1443395921105780836/photo_2025-11-26_20-24-31.jpg?ex=6928eab4&is=69279934&hm=57b6d744f5c2f69e5f076d4b1fcda68a144ff83cea788172910814b77275cdd3');
-      background-size:cover;background-position:center;display:flex;align-items:flex-start;justify-content:center;padding:28px;
+      background-color:#f5f7fa;display:flex;align-items:flex-start;justify-content:center;padding:28px;font-smoothing:antialiased;
     }
 
-    .app-shell{width:100%;max-width:var(--max-width);background:linear-gradient(180deg, rgba(6,8,12,0.55), rgba(6,8,12,0.75));backdrop-filter:blur(6px);border-radius:16px;overflow:hidden;box-shadow:0 12px 40px rgba(2,6,23,0.6)}
+    .app-shell{width:100%;max-width:var(--max-width);background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 6px 18px rgba(16,24,40,0.06)}
 
     /* Topbar */
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.03)}
     .brand{display:flex;align-items:center;gap:12px}
-    .brand h1{margin:0;font-size:18px;letter-spacing:0.3px}
-    .brand small{display:block;color:var(--muted);font-size:12px}
+    .brand h1{margin:0;font-size:18px;letter-spacing:0.3px;color:#111}
+    .brand small{display:block;color:rgba(17,17,17,0.6);font-size:12px}
 
-    .api-status{font-size:13px;padding:8px 12px;border-radius:999px;background:var(--glass);color:var(--muted)}
+    .api-status{font-size:13px;padding:8px 12px;border-radius:999px;background:transparent;color:rgba(17,17,17,0.6)}
 
     /* Layout */
     .layout{display:flex;gap:18px;padding:18px}
@@ -41,39 +40,36 @@
 
     /* Categories */
     .categories{display:flex;flex-direction:column;gap:10px}
-    .cat-btn{padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;background:var(--card);color:var(--muted);display:flex;align-items:center;justify-content:space-between}
-    .cat-btn.hash{background:linear-gradient(90deg,var(--accent),#f97316);color:#fff}
-    .cat-btn.weed{background:linear-gradient(90deg,var(--accent-2),#60a5fa);color:#fff}
+    .cat-btn{padding:10px;border-radius:8px;border:1px solid rgba(16,24,40,0.04);font-weight:600;cursor:pointer;background:transparent;color:rgba(17,17,17,0.8);display:flex;align-items:center;justify-content:space-between}
+    .cat-btn.hash,.cat-btn.weed{background:transparent;color:rgba(17,17,17,0.8)}
 
     /* Grid */
     .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
 
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));padding:10px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.45);display:flex;flex-direction:column;gap:10px}
+    .card{background:#fff;padding:12px;border-radius:8px;border:1px solid rgba(16,24,40,0.04);box-shadow:0 6px 18px rgba(16,24,40,0.04);display:flex;flex-direction:column;gap:10px}
 
-    .media{height:170px;background:#000;border-radius:10px;overflow:hidden}
+    .media{height:170px;background:#f0f3f7;border-radius:8px;overflow:hidden;display:flex;align-items:center;justify-content:center}
     .media img,.media video{width:100%;height:100%;object-fit:cover;display:block}
 
     .meta{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-    .meta .title{font-weight:700}
-    .meta .sub{font-size:13px;color:var(--muted)}
+    .meta .title{font-weight:700;color:#111}
+    .meta .sub{font-size:13px;color:rgba(17,17,17,0.6)}
 
-    .price-badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:6px 10px;border-radius:999px;font-weight:800;font-size:13px}
+    .price-badge{border:1px solid rgba(16,24,40,0.06);color:rgba(17,17,17,0.9);padding:6px 10px;border-radius:999px;font-weight:700;font-size:13px;background:transparent}
 
     .mini-prices{display:flex;gap:8px;flex-wrap:wrap}
-    .mini-prices .p{background:rgba(255,255,255,0.03);padding:6px 8px;border-radius:8px;font-size:12px;color:var(--muted)}
+    .mini-prices .p{background:transparent;padding:6px 8px;border-radius:8px;font-size:12px;color:rgba(17,17,17,0.6);border:1px solid rgba(16,24,40,0.04)}
 
     .actions{display:flex;gap:8px}
-    .actions button{flex:1;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:14px;transition:all .2s ease}
-    .actions .details{background:#111827;color:#fbbf24}
-    .actions .details:hover{background:#1f2937;transform:translateY(-2px);box-shadow:0 4px 12px rgba(251,191,36,0.15)}
-    .actions .order{background:#10b981;color:#fff}
-    .actions .order:hover{background:#059669;transform:translateY(-2px);box-shadow:0 4px 12px rgba(16,185,129,0.3)}
+    .actions button{flex:1;padding:10px;border-radius:8px;border:1px solid rgba(16,24,40,0.04);cursor:pointer;font-weight:700;font-size:14px;background:transparent;color:rgba(17,17,17,0.9)}
+    .actions .details{background:transparent}
+    .actions .order{background:transparent}
 
     /* Modals (simple) */
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);align-items:center;justify-content:center;padding:20px}
-    .modal .content{background:linear-gradient(180deg, rgba(12,14,22,0.96), rgba(6,8,14,0.98));padding:18px;border-radius:12px;max-width:640px;width:100%}
-    .modal h3{margin-top:0}
-    .close{float:right;cursor:pointer;background:transparent;border:none;color:var(--muted);font-size:20px}
+    .modal{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.12);align-items:center;justify-content:center;padding:20px}
+    .modal .content{background:#fff;padding:18px;border-radius:10px;max-width:640px;width:100%;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+    .modal h3{margin-top:0;color:#111}
+    .close{float:right;cursor:pointer;background:transparent;border:none;color:rgba(17,17,17,0.6);font-size:20px}
 
     /* Responsive */
     @media (max-width:880px){
@@ -82,26 +78,26 @@
     }
 
     /* Hover & animations */
-    .card{transition:all .25s cubic-bezier(0.4,0,0.2,1)}
-    .card:hover{transform:translateY(-4px);box-shadow:0 12px 30px rgba(2,6,23,0.6)}
+    .card{transition:all .14s ease}
+    .card:hover{transform:translateY(-2px)}
 
-    .cat-btn{transition:all .2s ease}
-    .cat-btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(139,92,246,0.25)}
+    .cat-btn{transition:all .12s ease}
+    .cat-btn:hover{transform:translateY(-1px)}
 
     textarea,input{box-sizing:border-box;font-family:inherit;font-size:14px}
-    textarea:focus,input:focus{outline:none;border-color:rgba(255,255,255,0.1);background:rgba(255,255,255,0.06)}
+    textarea:focus,input:focus{outline:none;border-color:rgba(16,24,40,0.08);background:transparent}
 
     /* Button states */
-    button:active{transform:scale(0.98)}
-    button:disabled{opacity:0.5;cursor:not-allowed}
+    button:active{transform:scale(0.995)}
+    button:disabled{opacity:0.6;cursor:not-allowed}
   </style>
 </head>
 <body>
   <div class="app-shell">
     <div class="topbar">
       <div class="brand">
-        <h1>🛒 DREAM SHOP</h1>
-        <small>Bot de commande — Support: @DREAMSHOP390</small>
+        <h1>Dream Shop</h1>
+        <small>Bot de commande — support</small>
       </div>
       <div id="apiStatus" class="api-status">🔄 Connexion à l'API...</div>
     </div>
@@ -109,8 +105,8 @@
     <div class="layout">
       <aside class="sidebar">
         <div class="categories">
-          <button class="cat-btn hash" onclick="showProducts('hash')">HASH 🍫 <span style="opacity:0.9"></span></button>
-          <button class="cat-btn weed" onclick="showProducts('weed')">WEED 🌱</button>
+          <button class="cat-btn hash" onclick="showProducts('hash')">HASH <span style="opacity:0.9"></span></button>
+          <button class="cat-btn weed" onclick="showProducts('weed')">WEED</button>
         </div>
       </aside>
 
@@ -128,7 +124,7 @@
     </div>
 
     <!-- Modals -->
-    <div id="priceModal" class="modal"><div class="content"><button class="close" onclick="closeModal('priceModal')">&times;</button><h3 id="priceModalTitle"></h3><div id="priceList" style="margin:12px 0"></div><div><button onclick="showOrderFromPrice()" style="width:100%;padding:12px;border-radius:10px;background:#10b981;color:#fff;border:none;font-weight:700;cursor:pointer;transition:all .2s ease" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">🛒 Commander</button></div></div></div>
+    <div id="priceModal" class="modal"><div class="content"><button class="close" onclick="closeModal('priceModal')">&times;</button><h3 id="priceModalTitle"></h3><div id="priceList" style="margin:12px 0"></div><div><button onclick="showOrderFromPrice()" style="width:100%;padding:12px;border-radius:10px;background:#10b981;color:#fff;border:none;font-weight:700;cursor:pointer;transition:all .2s ease" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">Commander</button></div></div></div>
 
     <div id="orderModal" class="modal"><div class="content"><button class="close" onclick="closeModal('orderModal')">&times;</button><h3 id="orderModalTitle"></h3><div id="weightButtons" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px"></div></div></div>
 
@@ -208,7 +204,7 @@
       currentCategory = category;
       document.getElementById('categoryView').style.display = 'none';
       document.getElementById('productsView').style.display = 'block';
-      document.getElementById('categoryTitle').textContent = category.toUpperCase() + (category==='hash'? ' 🍫':' 🌱');
+      document.getElementById('categoryTitle').textContent = category.toUpperCase();
 
       await loadStock();
       const grid = document.getElementById('productsGrid');
@@ -240,7 +236,7 @@
         // meta
         const meta = document.createElement('div'); meta.className='meta';
         const left = document.createElement('div');
-        const t = document.createElement('div'); t.className='title'; t.textContent = '📦 ' + product.name; left.appendChild(t);
+        const t = document.createElement('div'); t.className='title'; t.textContent = product.name; left.appendChild(t);
         const s = document.createElement('div'); s.className='sub'; s.textContent = product.stock_total? product.stock_total + ' en stock':''; left.appendChild(s);
 
         const right = document.createElement('div');
@@ -257,8 +253,8 @@
 
         // actions
         const actions = document.createElement('div'); actions.className='actions';
-        const btnD = document.createElement('button'); btnD.className='details'; btnD.textContent='💰 Détails'; btnD.onclick = ()=> showPrices(category, idx);
-        const btnO = document.createElement('button'); btnO.className='order'; btnO.textContent='🛒 Commander'; btnO.onclick = ()=> showOrder(category, idx);
+        const btnD = document.createElement('button'); btnD.className='details'; btnD.textContent='Détails'; btnD.onclick = ()=> showPrices(category, idx);
+        const btnO = document.createElement('button'); btnO.className='order'; btnO.textContent='Commander'; btnO.onclick = ()=> showOrder(category, idx);
         actions.appendChild(btnD); actions.appendChild(btnO);
 
         card.appendChild(mediaWrap); card.appendChild(meta); card.appendChild(mini); card.appendChild(actions);
