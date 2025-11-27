@@ -290,7 +290,32 @@
 
     function selectWeight(weight,price){ selectedWeight=weight; selectedPrice=price; closeModal('orderModal'); document.getElementById('addressModal').style.display='flex'; }
 
-    function submitOrder(){ const address=document.getElementById('addressInput').value.trim(); const phone=document.getElementById('phoneInput').value.trim(); if(!address||!phone){ tg.showAlert('⚠️ Remplis tous les champs'); return; } const orderData={ product: currentProduct.product.name, category: currentProduct.category, weight: selectedWeight, price: selectedPrice, address, phone, user: currentUser||{id:0,username:'unknown'} }; tg.sendData(JSON.stringify(orderData)); closeModal('addressModal'); tg.showPopup({title:'✅ Commande envoyée',message:`Ta commande pour ${currentProduct.product.name} a bien été envoyée.`,buttons:[{type:'ok'}]}); document.getElementById('addressInput').value=''; document.getElementById('phoneInput').value=''; showHome(); }
+    async function submitOrder(){
+      const address=document.getElementById('addressInput').value.trim();
+      const phone=document.getElementById('phoneInput').value.trim();
+      if(!address||!phone){ tg.showAlert('⚠️ Remplis tous les champs'); return; }
+      const orderData={ product: currentProduct.product.name, category: currentProduct.category, weight: selectedWeight, price: selectedPrice, address, phone, user: currentUser||{id:0,username:'unknown'} };
+
+      // Envoi de la commande au backend (qui forwardera au bot/admin)
+      try{
+        const r = await fetch(`${API_URL}/api/order`, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(orderData)});
+        const j = await r.json();
+        if(r.ok && j.success){
+          closeModal('addressModal');
+          tg.showPopup({title:'✅ Commande envoyée',message:`Ta commande pour ${currentProduct.product.name} a bien été envoyée à l'admin.`,buttons:[{type:'ok'}]});
+        } else {
+          console.warn('order send failed', j);
+          tg.showAlert('❌ Erreur lors de l'envoi de la commande. Réessaie.');
+        }
+      }catch(e){
+        console.error('submitOrder error',e);
+        tg.showAlert('❌ Impossible de contacter le serveur.');
+      }
+
+      document.getElementById('addressInput').value='';
+      document.getElementById('phoneInput').value='';
+      showHome();
+    }
 
     function closeModal(id){ document.getElementById(id).style.display='none'; }
     window.onclick = (e)=>{ if(e.target.classList && e.target.classList.contains('modal')) e.target.style.display='none'; }
