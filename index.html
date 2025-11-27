@@ -67,7 +67,11 @@
 
     /* Modals (simple) */
     .modal{display:none;position:fixed;inset:0;background:rgba(16,24,40,0.12);align-items:center;justify-content:center;padding:20px}
-    .modal .content{background:#fff;padding:18px;border-radius:10px;max-width:640px;width:100%;box-shadow:0 8px 24px rgba(16,24,40,0.06)}
+    .modal .content{background:#fff;padding:18px;border-radius:10px;max-width:640px;width:100%;box-shadow:0 8px 24px rgba(16,24,40,0.06);color:#111}
+    .modal .content button{color:inherit}
+    /* Weight buttons explicit styling to avoid white-on-white issues */
+    #weightButtons button{padding:10px 12px;border-radius:8px;border:1px solid #e5e7eb;background:#f9fafb;color:#374151;cursor:pointer;font-weight:700;transition:all .2s ease}
+    #weightButtons button:hover{background:#f3f4f6;border-color:#d1d5db}
     .modal h3{margin-top:0;color:#111}
     .close{float:right;cursor:pointer;background:transparent;border:none;color:rgba(17,17,17,0.6);font-size:20px}
 
