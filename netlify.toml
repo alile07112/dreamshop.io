@@ -1,0 +1,8 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/api/*"
+  to = "http://45.158.77.19:5000/:splat"
+  status = 200
+  force = false
