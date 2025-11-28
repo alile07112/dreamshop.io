@@ -13,4 +13,5 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5000
 
-CMD ["gunicorn", "api:app", "--bind", "0.0.0.0:5000"]
+ENV PORT=5000
+CMD ["bash", "-lc", "gunicorn api:app --bind 0.0.0.0:${PORT}"]
